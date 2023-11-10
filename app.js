@@ -1,18 +1,36 @@
 const start=document.getElementById('start')
 const pause=document.getElementById('pause')
+const timeHolder = document.querySelector('#progressTime');
 
+start.addEventListener('click',startGame)
+pause.addEventListener('click',pauseGame)
 
 
 
 let timeChecker=59
 let startClickedMultipleTimes=0
 let gameIsPaused=true
+let score=0
 
-
-start.addEventListener('click',startGame)
-pause.addEventListener('click',pauseGame) 
-let timeHolder = document.querySelector('#progressTime');
 let timer;
+
+
+function startGame(){
+  gameIsPaused=false
+  if(startClickedMultipleTimes==0){
+  let timeAtStart=timeChecker
+  frogRandomDisplay()
+  time(timeAtStart);
+  
+}
+  startClickedMultipleTimes++
+}
+
+function pauseGame(){
+  gameIsPaused=true
+  startClickedMultipleTimes=0
+  clearInterval(timer);
+}
 
 function time(seconds){
   function countdown() {
@@ -30,60 +48,51 @@ function time(seconds){
   timer = setInterval(countdown, 1000);
 }
 
-function startGame(){
-  gameIsPaused=false
-  if(startClickedMultipleTimes==0){
-  let timeAtStart=timeChecker
-  time(timeAtStart);
-  frogRandomDisplay()
-}
-  startClickedMultipleTimes++
-}
-
-function pauseGame(){
-  gameIsPaused=true
-  startClickedMultipleTimes=0
-  clearInterval(timer);
-}
-
-
-
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function upgradeScore(){
+  const scoreBoard=document.querySelector('#score')
+  score++
+  scoreBoard.innerText=score
+}
+
 function frogRandomDisplay(){
   let randArr=[]
+  let n=0
   let randomFrogInterval=setInterval(frogRotation, 1000);
   function frogRotation(){
     if(gameIsPaused==false){
       let random=rand(1,9)
       randArr.push(random)
-      if(randArr.length==2){
-        
-        while(randArr[0]==randArr[1]){
-          console.log(randArr)
+      
+      if(randArr.length>=2){
+        while(randArr[n-1]==randArr[n]){
+          //console.log(randArr)
           random=rand(1,9)
-          randArr[1]=random
+          randArr[n]=random
         }
-        randArr=[]
-      }
-      console.log(random)
+      }n++
+      //console.log(random)
       let choosedGridItem=document.querySelector([`[data-id='${random}']`])
       
       let img = document.createElement('img');
       img.setAttribute('src', 'frog.png');
+      img.setAttribute('data-id', `${random}`);
+      img.addEventListener('click',upgradeScore)
       choosedGridItem.appendChild(img);
       setTimeout(()=>{choosedGridItem.innerHTML=''},1000)
       
       
-    }else clearInterval(randomFrogInterval)
+    }else{
+      clearInterval(randomFrogInterval)
+      //let imgAtPause=document.querySelector('img')
+      //let itemDataId=imgAtPause.getAttribute('data-id')
+      //let pausedGridItem = document.querySelector([`[data-id='${itemDataId}']`])
+      //setTimeout(()=>{pausedGridItem.innerHTML='<img src="frog.png">'},1000)
+      //console.log(pausedGridItem)
+    }
   }
 }
 
-
-function gameStarted(){
-  if(gameIsPaused==false){
-
-  }
-}
